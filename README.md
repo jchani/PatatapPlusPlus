@@ -14,3 +14,6 @@ Hit the play button and press any sequence of keys from A-Z.
 Each key from A through Z plays a unique sound. Animations are unique row-wise while colors are different column-wise. The spacebar changes the color of the background. The return key toggles between real-time and recording mode (which is not currently not fully functional). 
 
 The musicalpaintings project is a fun variation of Animations. It is identical except for the omission of one line of code, resulting in each frame of every animation to persist in the window - creating a sort of "musical painting"! 
+Here's an example of what that can look like: 
+
+<img src="Sample1.png" alt="Drawing" width="640" height="362""/>
