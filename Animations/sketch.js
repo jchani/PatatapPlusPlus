@@ -18,18 +18,24 @@ function preload(){
   sound3 = loadSound('assets/Vibraslap.mp3');  
   sound4 = loadSound('assets/Toot.mp3'); 
   sound5 = loadSound('assets/glock.wav');   
+  sound6 = loadSound('assets/AltoSax.wav');
+  sound7 = loadSound('assets/Ping.mp3')
   
   sound11 = loadSound('assets/ConcreteThump.wav'); 
   sound12 = loadSound('assets/bass2.wav'); 
   sound13 = loadSound('assets/OpenHiHat.wav'); 
   sound14 = loadSound('assets/ViolinFade.mp3'); 
   sound15 = loadSound('assets/Snare.wav');  
+  sound16 = loadSound('assets/SynthHorn.wav');
+  sound17 = loadSound('assets/Rise1.mp3')  
   
   sound20 = loadSound('assets/FloorTom.wav');  
   sound21 = loadSound('assets/bass1.wav');  
   sound22 = loadSound('assets/OpenHiHat.wav');  
   sound23 = loadSound('assets/FingerSnap.wav');  
   sound24 = loadSound('assets/EDBass.wav');   
+  sound25 = loadSound('assets/PianoLow.wav');  
+  sound26 = loadSound('assets/Snaps.mp3')  
   
   noSound = loadSound('assets/silence.mp3')
 }
@@ -37,8 +43,6 @@ function preload(){
 function setup() {
   createCanvas(1000, 800);
   background(canvasColor[canvasIndex%canvasColor.length]);
-  // Falling animation: Create liquid object
-  liquid = new Liquid(0, height/2, width, height/2, 0.1);
 }
 
 function draw() {
@@ -59,6 +63,8 @@ function draw() {
   animateColorWheel();
   animateShootingLine();
   animateFadingRectangle();
+  animateExpandingRectangle();
+  animateRotatingStar();
   
   if(recordMode){
     animateTimeBar();
@@ -157,7 +163,7 @@ function keyMapping(keyNum){
     case 119: //W
       row = 0;
       sound = sound2;
-      showStar = 50;
+      showShiningStar = 50;
       break;
     case 101: //E
       row = 0;
@@ -176,6 +182,16 @@ function keyMapping(keyNum){
       sound = sound5;
       resetFadingRectangle();
       break;
+    case 121: ///Y
+      row = 0;
+      sound = sound6;
+      resetExpandingRectangle();
+      break;      
+    case 117: //U
+      row = 2;
+      sound = sound7;
+      showRotatingStar = 30;      
+      break;        
       
       
     case 97: //A
@@ -186,7 +202,7 @@ function keyMapping(keyNum){
     case 115: //S
       row = 1;
       sound = sound12;
-      showStar = 50;
+      showShiningStar = 50;
       break;    
     case 100: //D
       row = 1;
@@ -203,10 +219,19 @@ function keyMapping(keyNum){
     case 103: //G
       row = 1;
       sound = sound15;
-      showRect = 30;
       resetFadingRectangle();      
       break;
-                  
+    case 104: //H
+      row = 1;
+      sound = sound16;
+      resetExpandingRectangle();      
+      break;                 
+    case 106: //J
+      row = 2;
+      sound = sound17;
+      showRotatingStar = 30;
+      break;        
+      
     
     case 122: //Z
       row = 2;
@@ -216,7 +241,7 @@ function keyMapping(keyNum){
     case 120: //X
       row = 2;
       sound = sound21;
-      showStar = 50;
+      showShiningStar = 50;
       break;      
     case 99: //C
       row = 2;
@@ -234,12 +259,27 @@ function keyMapping(keyNum){
       sound = sound24;
       resetFadingRectangle(); 
       break;           
+    case 110: //N
+      row = 2;
+      sound = sound25;
+      resetExpandingRectangle(); 
+      break;        
+    case 109: //M
+      row = 2;
+      sound = sound26;
+      showRotatingStar = 30;      
+      break;  
       
     //Spacebar
     case 32:
       row = 4;
       sound = noSound;
       changeCanvasColor();
+      break;
+      
+    //other keys
+    default:
+      sound = noSound;
       break;
   }
 }
