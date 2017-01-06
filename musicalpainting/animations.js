@@ -2,13 +2,15 @@
 var showRotatingStar = 0; var showShiningStar = 0;var showLine = 0;
 
 var arrExpandingRectangles = []
+
 var arrFadingRectangles = []; //stores all instances of fading rectangles
 
 var shootingLineX = 0;var shootingLineY = 0;var lineDeltaX = 0;var lineDeltaY = 0;var startDir;//length of line is constant in one animation
 
 var arrColorWheels = [];
 
-var arrFallingCircles = []; //stroes all instances of falling circles
+var arrFallingCircles = []; //stores all instances of falling circles
+var fcIndex = 0; //used to avoid iterating over instances that are finished
 
 
 //Spacebar
@@ -247,7 +249,7 @@ function resetFallingCircles() {
   arrFallingCircles.push(new fallingCircles(circles));
 }
 function animateFallingCircles(){
-  for(var j = 0; j < arrFallingCircles.length; j++){
+  for(var j = fcIndex; j < arrFallingCircles.length; j++){
     var fc = arrFallingCircles[j];
     var circles = fc.circles;
     for (var i = 0; i < circles.length; i++) {
@@ -264,6 +266,12 @@ function animateFallingCircles(){
       // Update and display
       circles[i].update();
       circles[i].display(fc.colour);
+      
+      //Check if instance is outside of canvas: Delete and increment counter
+      if(!contains(circles[i], 0, 0, width, height)){
+        arrFallingCircles[fcIndex] = null;
+        fcIndex++;
+      }
     }  
   }
 }

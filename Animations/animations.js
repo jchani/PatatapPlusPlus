@@ -1,14 +1,17 @@
 //ints that will be decremented: 0 - no animation, any other number - animation
 var showRotatingStar = 0; var showShiningStar = 0;var showLine = 0;
 
-var arrExpandingRectangles = []
+var arrExpandingRectangles = [];
+var erIndex = 0;
+
 var arrFadingRectangles = []; //stores all instances of fading rectangles
 
 var shootingLineX = 0;var shootingLineY = 0;var lineDeltaX = 0;var lineDeltaY = 0;var startDir;//length of line is constant in one animation
 
 var arrColorWheels = [];
 
-var arrFallingCircles = []; //stroes all instances of falling circles
+var arrFallingCircles = []; //stores all instances of falling circles
+var fcIndex = 0; //incremented to avoid iterating over finished animations
 
 
 //Spacebar
@@ -23,7 +26,7 @@ function changeCanvasColor(){
 
 
 //I, K
-function popcorn(){
+function fadingCircle(){
   
 }
 
@@ -70,7 +73,7 @@ function resetExpandingRectangle(x,y){
 }
 
 function animateExpandingRectangle(){
-  for(var i = 0; i < arrExpandingRectangles.length; i++){
+  for(var i = erIndex; i < arrExpandingRectangles.length; i++){
     var r = arrExpandingRectangles[i];
     if(r.x > 0 && r.width < width){
       noFill();
@@ -81,6 +84,16 @@ function animateExpandingRectangle(){
       r.width += 40;
       r.height += 40;
     }
+
+    //Remove instance if it is outside of canvas
+    if(!containsShape(r.x, r.y , 0, 0, width, height)){
+      //arrExpandingRectangles[i] = null;
+      erIndex++;
+      println("Current erIndex: " + erIndex);
+      // println("Length of arrExpandingRectangles " + arrExpandingRectangles.length);
+      // println("Current i is " + i);      
+    }
+    
   }
 }
 
@@ -116,8 +129,8 @@ function animateFadingRectangle(){
   for(var i = 0; i < arrFadingRectangles.length; i++){
     var r = arrFadingRectangles[i];
     if(r.rectWidth > 0){
-      stroke(colour);
-      fill(colour);
+      stroke(r.colour);
+      fill(r.colour);
       rect(r.x, r.y1, r.rectWidth, r.rectHeight);
       rect(r.x, r.y2, r.rectWidth, r.rectHeight);
       rect(r.x, r.y3, r.rectWidth, r.rectHeight);      
@@ -181,6 +194,7 @@ function resetColorWheel() {
 }
 
 function animateColorWheel(){
+  stroke('black');
   for(var i = 0; i < arrColorWheels.length; i++){
     var cw = arrColorWheels[i]; //current Color Wheel
   	if(cw.show > 0){
@@ -247,11 +261,11 @@ function resetFallingCircles() {
   arrFallingCircles.push(new fallingCircles(circles));
 }
 function animateFallingCircles(){
-  for(var j = 0; j < arrFallingCircles.length; j++){
+  for(var j = fcIndex; j < arrFallingCircles.length; j++){
     var fc = arrFallingCircles[j];
     var circles = fc.circles;
     for (var i = 0; i < circles.length; i++) {
-      if (contains(circles[i], 0, height/2, width, height)) { //true if circle is in bottom half
+      if (containsObj(circles[i], 0, height/2, width, height)) { //true if circle is in bottom half
         var dragForce = calculateDrag(circles[i]); // Calculate drag force
         circles[i].applyForce(dragForce); // Apply drag force to Mover
       }
@@ -265,15 +279,28 @@ function animateFallingCircles(){
       circles[i].update();
       circles[i].display(fc.colour);
     }  
+    //Remove instance if it is outside of canvas
+    if(!containsObj(circles[0], 0, 0, width, height)){
+      fcIndex++;
+      // println("Current fcIndex: " + fcIndex);
+      // println("Length of arrFallingCircles " + arrFallingCircles.length);
+      // println("Current j is " + j);
+    }
   }
 }
   
-function contains(m,x,y,w,h){// returns true if object is inside bounded area
+function containsObj(m,x,y,w,h){// returns true if object is inside bounded area
   var l = m.position;
   //println("l.x: " + l.x + " l.y: " + l.y);  
-  //println("x: " + x + " y: " + y + " w: "+ w + " h: " + h)
+  //println("x: " + x + " y: " + y + " w: "+ w + " h: " + h);
   return l.x > x && l.x < w && 
          l.y > y && l.y < h;
+}
+
+function containsShape(shapeX,shapeY,x,y,w,h){// returns true if shape is within bounded area
+  return shapeX > x && shapeX < w && 
+        shapeY > y && shapeY < h;
+  
 }
   
 // Calculate drag force

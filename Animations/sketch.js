@@ -4,38 +4,44 @@ var canvasColor = [127, "#00BFFF","#F5F5DC"]; // Array of colors to cycle throug
 var canvasIndex = 0; 
 var sound; //current sound
 
-var current; //current recordObj
+var currentRecordObj; //current recordObj
 var currentTime;
 var recordMode = false; //used to toggle between real-time and record mode
 var recording = []; //stores recordObj objects
 var addIndex = 0; 
-var loopIndex; var loopTime; //used when looping
+
+//used when looping
+var Loop = false; var loopIndex; var recordStartTime = 9999999;//JAVASCRIPT_INFINITY
+
 var timeBarDX = 0;
 
 function preload(){
   sound1 = loadSound('assets/Echo.mp3');
-  sound2 = loadSound('assets/glock1.wav');
+  sound2 = loadSound('assets/bass2.wav');
   sound3 = loadSound('assets/Vibraslap.mp3');  
-  sound4 = loadSound('assets/Toot.mp3'); 
-  sound5 = loadSound('assets/glock.wav');   
-  sound6 = loadSound('assets/AltoSax.wav');
+  sound4 = loadSound('assets/AltoSax.wav'); 
+  sound5 = loadSound('assets/glock1.wav');   
+  sound6 = loadSound('assets/FingerSnap.wav');
   sound7 = loadSound('assets/Ping.mp3')
   
   sound11 = loadSound('assets/ConcreteThump.wav'); 
-  sound12 = loadSound('assets/bass2.wav'); 
+  sound12 = loadSound('assets/bass1.wav'); 
   sound13 = loadSound('assets/OpenHiHat.wav'); 
-  sound14 = loadSound('assets/ViolinFade.mp3'); 
-  sound15 = loadSound('assets/Snare.wav');  
-  sound16 = loadSound('assets/SynthHorn.wav');
+  sound14 = loadSound('assets/Toot.mp3'); 
+  sound15 = loadSound('assets/glock.wav');  
+  sound16 = loadSound('assets/Snare.wav');
   sound17 = loadSound('assets/Rise1.mp3')  
   
   sound20 = loadSound('assets/FloorTom.wav');  
-  sound21 = loadSound('assets/bass1.wav');  
+  sound21 = loadSound('assets/bass3.wav');  
   sound22 = loadSound('assets/OpenHiHat.wav');  
-  sound23 = loadSound('assets/FingerSnap.wav');  
+  sound23 = loadSound('assets/ViolinFade.mp3');  
   sound24 = loadSound('assets/EDBass.wav');   
   sound25 = loadSound('assets/PianoLow.wav');  
   sound26 = loadSound('assets/Snaps.mp3')  
+  
+  //SynthHorn.wav
+  
   
   noSound = loadSound('assets/silence.mp3')
 }
@@ -45,7 +51,8 @@ function setup() {
   background(canvasColor[canvasIndex%canvasColor.length]);
 }
 
-function draw() {
+function draw(){
+  //set colors
   switch(row){
     case 0:
       colour = '#FF8000';
@@ -58,7 +65,7 @@ function draw() {
       break;
   }
   background(canvasColor[canvasIndex%canvasColor.length]);  
-  animateFallingCircles(colour);
+  animateFallingCircles();
   animateShiningStar();
   animateColorWheel();
   animateShootingLine();
@@ -80,7 +87,7 @@ function keyTyped() {
     recordMode = !recordMode; //toggle recordMode
     timeBarDX = 0;
     loopIndex = 0; 
-    
+    recordStartTime = millis();
   }
   
   //store recordObj objects
@@ -93,6 +100,10 @@ function keyTyped() {
   }
   
   keyMapping(keyCode);
+
+  //println("Current row is " + row);
+
+  
   sound.play();
 }
 
@@ -113,39 +124,48 @@ function animateTimeBar(){
 
 function restartLoop(){
   timeBarDX = 0;
+  Loop = false;
 }
 
 function loopRecording(){
-  if(recording.length > 0){
+  currentTime = millis(); 
+  
+  if(currentTime > recordStartTime){ //only loop 10 seconds after enter is pressed (first iteration)
+    Loop = true; 
+  }
+  
+  if(Loop && recording.length > 0){
+    //special case to set value of currentRecordObj dynamically (starts null without recorded keys)
     if(recording.length === 1){
-      current = recording[loopIndex];
-      loopIndex++;
+      currentRecordObj = recording[loopIndex];
+      println("loopIndex: " + loopIndex);
+      println("current.time: " + recording[loopIndex].time);      
     }
     
-    currentTime = millis();  
-    
-    if(current.time %10000 < currentTime%10000){//duration of loop is 10 seconds (10000 ms)
-      keyMapping(current.code); //play animation+sound
-      current = recording[loopIndex]; //
-      currentTime = millis();
+    //triggers animation (cannot use === because time not accurate to ms)
+    if(currentTime % 10000 < currentRecordObj.time %10000 ){
+      keyMapping(currentRecordObj.code); //play animation+sound
+      
       //println("current.code is " + current.code);
       //println("currentTime is: " + currentTime);  
-      loopIndex++;
     }
     
-
-   
-    // if((current.time > previousTime%10000)&&(current.time <= currentTime%10000)){
-    //   keyMapping(current.code); //play animation+sound
-    //   previousTime = currentTime; 
-    // }
+    //sets next currentRecordObj by incrementing loopIndex 
+    if(loopIndex < recording.length - 1){
+      loopIndex++;      
+    }
+    else{// loopback
+      loopIndex = 0;
+    }
+    currentRecordObj = recording[loopIndex];     
+    
   }
 }
 
 function printRecordingArray(){
   var str = "";
   for(var i = 0; i < recording.length; i++){
-    str = str + "Time is " + recording[i].time + ", Code is " + recording[i].code;
+    str = str + "Time is " + recording[i].time + ", Code is " + recording[i].code + "\n";
   }
   return str;
 }
