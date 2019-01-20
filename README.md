@@ -16,4 +16,4 @@ Each key from A through Z plays a unique sound. Animations are unique row-wise w
 The musicalpaintings project is a fun variation of Animations. It is identical except for the omission of one line of code, resulting in each frame of every animation to persist in the window - creating a sort of "musical painting"! 
 Here's an example of what that can look like: 
 
-<img src="Sample1.png" alt="Drawing" width="640" height="362""/>
+![Alt text](Sample1.png?raw=true "Title")
